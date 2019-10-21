@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display&display=swap" rel="stylesheet">
+    <title>Function vs Arrow function </title>
+</head>
+
+<body>
+    <h1>Function VS Arrow Function</h1>
+    <h1 id="container" class="container"></h1>
+    <span>
+        <button id="type" class="btn">Type</button>
+        <button id="name" class="btn">Name</button>
+        <button id="random" class="btn">Random</button>
+    </span>
+    <script>
+        const getRandomId = _ => Math.floor(Math.random() * (150 - 1) + 1)
+
+        const example1 = {
+            max: 150,
+            getRandomId: function () {
+                return Math.floor(Math.random() * (this.max - 1) + 1)
+            }
+        }
+
+        class API {
+            BASE_URL = 'https://pokeapi.co/api/v2/'
+            async fetch(id) {
+                const searchId = id || this.id
+                const response = await fetch(`${this.BASE_URL}pokemon/${searchId}`)
+                const pokemon = await response.json()
+                this.pokemon = pokemon
+                return pokemon
+            }
+        }
+        class Pokemon extends API {
+            constructor(id) {
+                super(id)
+                this.id = id
+                const self = this
+                this.$type.addEventListener('click', function () {
+                    console.log(this)
+                    self.renderType()
+                })
+                this.$name.addEventListener('click', () => {
+                    console.log(this)
+                    this.renderName()
+                })
+                this.$random.addEventListener('click', () => {
+                    console.log(this.randomId)
+                    this.fetch(this.randomId)
+                        .then(() => {
+                            this.renderName()
+                            this.fetch(this.randomId)
+                                .then(() => {
+                                    this.renderName()
+                                })
+                        })
+                })
+            }
+            $container = document.querySelector('#container')
+            $type = document.querySelector('#type')
+            $name = document.querySelector('#name')
+            $random = document.querySelector('#random')
+
+            get randomId() {
+                return Math.floor(Math.random() * (150 - 1) + 1)
+            }
+            renderName() {
+                this.$container.textContent = `Pokemon encontrado ${this.pokemon.name}`
+            }
+            renderType() {
+                this.$container.textContent = `Es de tipo ${this.pokemon.types[0].type.name}`
+            }
+        }
+        const pokemon = new Pokemon(25)
+        pokemon.fetch()
+            .then(() => {
+                pokemon.renderName()
+            })
+    </script>
+
+</body>
+
+</html>
